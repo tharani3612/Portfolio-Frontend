@@ -1,0 +1,81 @@
+
+/* =========================================
+   APP ROOT
+========================================= */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+
+  max-width: none;
+
+  background: #000000;
+  color: #ffffff;
+
+  border: none;
+  outline: none;
+}
+
+/* =========================================
+   APP MAIN
+========================================= */
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+
+  background: #000000;
+}
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+main {
+  width: 100%;
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
+  background: #000000;
+}
+
+/* =========================================
+   COMMON SECTION
+========================================= */
+
+section {
+  width: 100%;
+  position: relative;
+  scroll-margin-top: 85px;
+}
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.container {
+  width: 100%;
+  max-width: 1110px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

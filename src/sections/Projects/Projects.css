@@ -1,0 +1,547 @@
+
+/* ========================================
+   PROJECTS SECTION
+======================================== */
+
+.projects-section {
+  width: 100%;
+  min-height: 100vh;
+  padding: 110px 0 120px;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+}
+
+.projects-section *,
+.projects-section *::before,
+.projects-section *::after {
+  box-sizing: border-box;
+}
+
+/* ========================================
+   PROJECTS CONTAINER
+======================================== */
+
+.projects-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ========================================
+   SECTION HEADING
+======================================== */
+
+.projects-heading {
+  position: relative;
+  text-align: center;
+  margin: 0 auto 70px;
+  max-width: 750px;
+  z-index: 1;
+}
+
+/* BACKGROUND WORD */
+
+.projects-heading::before {
+  content: "PROJECTS";
+
+  position: absolute;
+  z-index: 0;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: #171717;
+  font-size: 100px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -3px;
+
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* MAIN HEADING */
+
+.projects-heading h2 {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 18px;
+
+  color: #fff;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.projects-heading h2 span {
+  color: #d4a344;
+}
+
+/* DESCRIPTION */
+
+.projects-heading p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+
+  color: #999;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* ========================================
+   PROJECT GRID
+======================================== */
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* ========================================
+   PROJECT CARD
+======================================== */
+
+.project-item,
+.project-small,
+.project-large,
+.project-wide {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+  background: #101010;
+
+  border: 1px solid #252525;
+  border-radius: 7px;
+
+  transition:
+    border-color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.project-item:hover {
+  border-color: #d4a344;
+  transform: translateY(-5px);
+}
+
+/* ========================================
+   PROJECT IMAGE
+======================================== */
+
+.project-image-wrapper {
+  position: relative;
+  width: 100%;
+
+  aspect-ratio: 16 / 10;
+
+  overflow: hidden;
+  background: #111;
+}
+
+.project-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition:
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.3, 1),
+    filter 0.6s ease;
+}
+
+/* IMAGE HOVER */
+
+.project-image-wrapper:hover .project-image {
+  transform: scale(1.08);
+  filter: brightness(0.65);
+}
+
+/* ========================================
+   GOLD HOVER OVERLAY
+======================================== */
+
+.project-overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(212, 163, 68, 0.88);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition:
+    opacity 0.45s ease,
+    visibility 0.45s ease;
+}
+
+.project-image-wrapper:hover .project-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ========================================
+   OVERLAY CONTENT
+======================================== */
+
+.project-overlay-content {
+  width: 100%;
+  padding: 25px;
+  text-align: center;
+
+  transform: translateY(25px);
+  opacity: 0;
+
+  transition:
+    transform 0.55s ease,
+    opacity 0.55s ease;
+}
+
+.project-image-wrapper:hover .project-overlay-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* CATEGORY */
+
+.project-category {
+  display: block;
+  margin-bottom: 12px;
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+
+/* PROJECT TITLE */
+
+.project-overlay-content h3 {
+  margin: 0 0 14px;
+
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* TECHNOLOGIES */
+
+.project-type {
+  display: block;
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 1.2px;
+}
+
+/* ========================================
+   BUTTONS BELOW IMAGE
+======================================== */
+
+.project-actions {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+  padding: 20px 17px;
+
+  margin-top: auto;
+  background: #101010;
+}
+
+/* COMMON BUTTON */
+
+.project-btn {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 10px;
+
+  border: 1px solid #d4a344;
+  border-radius: 4px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.project-btn svg {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+/* SOURCE CODE */
+
+.source-btn {
+  background: transparent;
+  color: #d4a344;
+}
+
+.source-btn:hover {
+  background: #d4a344;
+  color: #000;
+  transform: translateY(-3px);
+}
+
+/* LIVE DEMO */
+
+.demo-btn {
+  background: #d4a344;
+  color: #000;
+}
+
+.demo-btn:hover {
+  background: #f0bc58;
+  color: #000;
+  transform: translateY(-3px);
+}
+
+/* ========================================
+   KEYBOARD SUPPORT
+======================================== */
+
+.project-image-wrapper:focus-within .project-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.project-image-wrapper:focus-within
+.project-overlay-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   LAPTOP RESPONSIVE
+======================================== */
+
+@media (max-width: 1100px) {
+  .projects-container {
+    max-width: 1000px;
+  }
+
+  .projects-grid {
+    gap: 16px;
+  }
+
+  .project-image-wrapper {
+    aspect-ratio: 16 / 10;
+  }
+
+  .project-overlay-content {
+    padding: 18px;
+  }
+
+  .project-overlay-content h3 {
+    font-size: 24px;
+  }
+
+  .project-actions {
+    padding: 17px 12px;
+    gap: 9px;
+  }
+}
+
+/* ========================================
+   TABLET RESPONSIVE
+======================================== */
+
+@media (max-width: 900px) {
+  .projects-section {
+    padding: 95px 0 100px;
+  }
+
+  .projects-container {
+    max-width: 750px;
+  }
+
+  .projects-heading::before {
+    top: 25px;
+    font-size: 85px;
+  }
+
+  .projects-heading h2 {
+    font-size: 42px;
+  }
+
+  .projects-heading p {
+    font-size: 15px;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .project-image-wrapper {
+    aspect-ratio: 16 / 10;
+  }
+
+  .project-overlay-content h3 {
+    font-size: 23px;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+======================================== */
+
+@media (max-width: 600px) {
+  .projects-section {
+    min-height: auto;
+    padding: 80px 0;
+  }
+
+  .projects-container {
+    padding: 0 18px;
+  }
+
+  .projects-heading {
+    margin-bottom: 45px;
+  }
+
+  .projects-heading::before {
+    top: 15px;
+    font-size: 58px;
+    letter-spacing: -2px;
+  }
+
+  .projects-heading h2 {
+    font-size: 36px;
+  }
+
+  .projects-heading p {
+    font-size: 14px;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .project-image-wrapper {
+    aspect-ratio: 16 / 10;
+  }
+
+  .project-overlay-content {
+    padding: 20px;
+  }
+
+  .project-category {
+    font-size: 13px;
+  }
+
+  .project-overlay-content h3 {
+    font-size: 23px;
+  }
+
+  .project-type {
+    font-size: 10px;
+  }
+
+  .project-actions {
+    gap: 12px;
+    padding: 18px 15px;
+  }
+
+  .project-btn {
+    height: 42px;
+    font-size: 11px;
+  }
+}
+
+/* ========================================
+   SMALL MOBILE
+======================================== */
+
+@media (max-width: 380px) {
+  .projects-heading::before {
+    top: 12px;
+    font-size: 48px;
+  }
+
+  .projects-heading h2 {
+    font-size: 32px;
+  }
+
+  .projects-heading p {
+    font-size: 13px;
+  }
+
+  .project-overlay-content h3 {
+    font-size: 21px;
+  }
+
+  .project-actions {
+    gap: 8px;
+    padding: 15px 10px;
+  }
+
+  .project-btn {
+    height: 40px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .project-item,
+  .project-image,
+  .project-overlay,
+  .project-overlay-content,
+  .project-btn {
+    transition: none;
+  }
+}
