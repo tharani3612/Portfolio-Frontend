@@ -25,7 +25,8 @@ import {
 import "../AdminDashboard/AdminDashboard.css";
 import "./Messages.css";
 
-const API_URL = "http://localhost:5000/api/contact";
+// Render Backend API
+const API_URL = `${import.meta.env.VITE_API_URL}/contact`;
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -68,6 +69,8 @@ const Messages = () => {
 
       setMessages(response.data.data || []);
     } catch (err) {
+      console.error("Messages API Error:", err);
+
       if ([401, 403].includes(err.response?.status)) {
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminData");
@@ -163,6 +166,8 @@ const Messages = () => {
         setSelectedMessage(null);
       }
     } catch (err) {
+      console.error("Delete Message Error:", err);
+
       if ([401, 403].includes(err.response?.status)) {
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminData");

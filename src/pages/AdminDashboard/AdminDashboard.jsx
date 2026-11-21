@@ -24,7 +24,8 @@ import {
 
 import "./AdminDashboard.css";
 
-const API_URL = "http://localhost:5000/api/contact";
+// Production Backend API
+const API_URL = `${import.meta.env.VITE_API_URL}/contact`;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const AdminDashboard = () => {
   // Get admin token
   const token = sessionStorage.getItem("adminToken");
 
-  // IMPORTANT: Keep adminData stable between renders
+  // Keep adminData stable between renders
   const adminData = useMemo(() => {
     try {
       return JSON.parse(
@@ -64,6 +65,8 @@ const AdminDashboard = () => {
 
       setMessages(response.data.data || []);
     } catch (err) {
+      console.error("Dashboard API Error:", err);
+
       if ([401, 403].includes(err.response?.status)) {
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminData");
