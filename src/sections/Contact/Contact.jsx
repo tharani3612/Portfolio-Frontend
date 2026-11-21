@@ -13,7 +13,10 @@ import {
 
 import "./Contact.css";
 
-const API_URL = "http://localhost:5000/api/contact";
+// Render Backend API URL
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/contact`
+  : "";
 
 const contactInfo = [
   {
@@ -55,45 +58,102 @@ const Contact = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
   const [status, setStatus] = useState({
     type: "",
     message: "",
   });
 
+  // Handle input changes
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    if (status.message) {
+      setStatus({
+        type: "",
+        message: "",
+      });
+    }
   };
 
+  // Submit contact form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
-    setStatus({ type: "", message: "" });
+    if (loading) return;
+
+    if (!API_URL) {
+      setStatus({
+        type: "error",
+        message: "Backend API URL is not configured.",
+      });
+      return;
+    }
 
     try {
-      const response = await axios.post(API_URL, formData);
+      setLoading(true);
 
       setStatus({
-        type: "success",
-        message: response.data.message,
-      });
-
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
+        type: "",
         message: "",
       });
+
+      const response = await axios.post(
+        API_URL,
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 20000,
+        }
+      );
+
+      if (response.data.success) {
+        setStatus({
+          type: "success",
+          message:
+            response.data.message ||
+            "Message submitted successfully!",
+        });
+
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setStatus({
+          type: "error",
+          message:
+            response.data.message ||
+            "Unable to send your message.",
+        });
+      }
+
     } catch (error) {
+      console.error("Contact Form Error:", error);
+
       setStatus({
         type: "error",
         message:
           error.response?.data?.message ||
-          "Unable to send message. Please try again.",
+          (error.code === "ECONNABORTED"
+            ? "Request timed out. Please try again."
+            : "Unable to send message. Please try again."),
       });
+
     } finally {
       setLoading(false);
     }
@@ -104,7 +164,6 @@ const Contact = () => {
       <div className="contact-container">
 
         {/* CONTACT HEADING */}
-
         <motion.div
           className="contact-heading"
           initial={{ opacity: 0, y: 40 }}
@@ -127,7 +186,6 @@ const Contact = () => {
         </motion.div>
 
         {/* CONTACT INFORMATION */}
-
         <div className="contact-info-grid">
           {contactInfo.map((item, index) => (
             <motion.div
@@ -150,7 +208,11 @@ const Contact = () => {
               <a
                 href={item.link}
                 target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
+                rel={
+                  item.external
+                    ? "noopener noreferrer"
+                    : undefined
+                }
               >
                 {item.value}
               </a>
@@ -159,7 +221,6 @@ const Contact = () => {
         </div>
 
         {/* CONTACT FORM AREA */}
-
         <motion.div
           className="contact-form-section"
           initial={{ opacity: 0, y: 65 }}
@@ -172,7 +233,6 @@ const Contact = () => {
         >
 
           {/* LEFT IMAGE */}
-
           <div className="contact-image-panel">
             <img
               src="/images/profile.png"
@@ -187,12 +247,13 @@ const Contact = () => {
           </div>
 
           {/* RIGHT FORM */}
-
           <div className="contact-form-panel">
             <form
               className="contact-form"
               onSubmit={handleSubmit}
             >
+
+              {/* NAME */}
               <div className="contact-form-field">
                 <input
                   type="text"
@@ -204,6 +265,7 @@ const Contact = () => {
                 />
               </div>
 
+              {/* EMAIL */}
               <div className="contact-form-field">
                 <input
                   type="email"
@@ -215,6 +277,7 @@ const Contact = () => {
                 />
               </div>
 
+              {/* SUBJECT */}
               <div className="contact-form-field">
                 <input
                   type="text"
@@ -226,6 +289,7 @@ const Contact = () => {
                 />
               </div>
 
+              {/* MESSAGE */}
               <div className="contact-form-field">
                 <textarea
                   name="message"
@@ -238,7 +302,6 @@ const Contact = () => {
               </div>
 
               {/* STATUS MESSAGE */}
-
               {status.message && (
                 <p
                   className={`contact-status ${status.type}`}
@@ -248,6 +311,7 @@ const Contact = () => {
                 </p>
               )}
 
+              {/* SUBMIT BUTTON */}
               <button
                 type="submit"
                 className="contact-submit-btn"
@@ -256,6 +320,7 @@ const Contact = () => {
                 {loading ? "SENDING..." : "SEND MESSAGE"}
                 <FiSend />
               </button>
+
             </form>
           </div>
 
