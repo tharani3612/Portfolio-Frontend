@@ -26,15 +26,15 @@ import "../AdminDashboard/AdminDashboard.css";
 import "./Messages.css";
 
 // Render Backend API
-const API_URL = `${import.meta.env.VITE_API_URL}/contact`;
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/contact`
+  : "";
 
 const Messages = () => {
   const navigate = useNavigate();
 
-  // Authentication
   const token = sessionStorage.getItem("adminToken");
 
-  // Keep adminData stable between renders
   const adminData = useMemo(() => {
     try {
       return JSON.parse(
@@ -45,17 +45,24 @@ const Messages = () => {
     }
   }, []);
 
-  // States
+  // STATES
   const [messages, setMessages] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
-  // Fetch messages
+  // FETCH MESSAGES
   const fetchMessages = useCallback(async () => {
     if (!token) return;
+
+    if (!API_URL) {
+      setError("Backend API URL is not configured.");
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -67,7 +74,11 @@ const Messages = () => {
         },
       });
 
-      setMessages(response.data.data || []);
+      setMessages(
+        Array.isArray(response.data.data)
+          ? response.data.data
+          : []
+      );
     } catch (err) {
       console.error("Messages API Error:", err);
 
@@ -91,20 +102,19 @@ const Messages = () => {
     }
   }, [token, navigate]);
 
-  // Authentication check and initial API call
+  // AUTHENTICATION AND INITIAL FETCH
   useEffect(() => {
     if (!token || !adminData) {
       navigate("/admin/login", {
         replace: true,
       });
-
       return;
     }
 
     fetchMessages();
   }, [token, adminData, navigate, fetchMessages]);
 
-  // Search filter
+  // SEARCH FILTER
   const filteredMessages = useMemo(() => {
     const keyword = search.trim().toLowerCase();
 
@@ -124,7 +134,7 @@ const Messages = () => {
     );
   }, [messages, search]);
 
-  // Format date
+  // FORMAT DATE
   const formatDate = (date) => {
     if (!date) return "--";
 
@@ -143,27 +153,51 @@ const Messages = () => {
     });
   };
 
-  // Delete message
+  // DELETE MESSAGE
   const handleDelete = async (id) => {
+    if (deletingId) return;
+
     const confirmed = window.confirm(
-      "Are you sure you want to delete this message?"
+      "Are you sure you want to permanently delete this message?"
     );
 
     if (!confirmed) return;
 
-    try {
-      await axios.delete(`${API_URL}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (!API_URL) {
+      alert("Backend API URL is not configured.");
+      return;
+    }
 
-      setMessages((previous) =>
-        previous.filter((message) => message._id !== id)
+    try {
+      setDeletingId(id);
+      setError("");
+
+      const response = await axios.delete(
+        `${API_URL}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (selectedMessage?._id === id) {
-        setSelectedMessage(null);
+      if (response.data.success) {
+        // Remove message from frontend
+        setMessages((previous) =>
+          previous.filter(
+            (message) => message._id !== id
+          )
+        );
+
+        // Close modal if deleted message is open
+        if (selectedMessage?._id === id) {
+          setSelectedMessage(null);
+        }
+      } else {
+        alert(
+          response.data.message ||
+            "Unable to delete message."
+        );
       }
     } catch (err) {
       console.error("Delete Message Error:", err);
@@ -181,12 +215,14 @@ const Messages = () => {
 
       alert(
         err.response?.data?.message ||
-          "Unable to delete message."
+          "Unable to delete message. Please try again."
       );
+    } finally {
+      setDeletingId(null);
     }
   };
 
-  // Logout
+  // LOGOUT
   const handleLogout = () => {
     sessionStorage.removeItem("adminToken");
     sessionStorage.removeItem("adminData");
@@ -196,14 +232,13 @@ const Messages = () => {
     });
   };
 
-  // Unique contacts
+  // UNIQUE CONTACTS
   const uniqueContacts = new Set(
     messages
       .map((item) => item.email?.trim().toLowerCase())
       .filter(Boolean)
   ).size;
 
-  // Authentication guard
   if (!token || !adminData) {
     return null;
   }
@@ -224,7 +259,6 @@ const Messages = () => {
             <h2>
               THARANI<span>DHARAN</span>
             </h2>
-
             <p>ADMIN PANEL</p>
           </div>
 
@@ -242,7 +276,6 @@ const Messages = () => {
         </div>
 
         <nav className="admin-sidebar-nav">
-
           <button
             className="admin-nav-item"
             onClick={() => {
@@ -265,12 +298,10 @@ const Messages = () => {
               {loading ? "..." : messages.length}
             </span>
           </button>
-
         </nav>
 
         {/* SIDEBAR BOTTOM */}
         <div className="admin-sidebar-bottom">
-
           <div className="admin-sidebar-user">
             <div className="admin-user-avatar">A</div>
 
@@ -287,7 +318,6 @@ const Messages = () => {
             <FiLogOut />
             Logout
           </button>
-
         </div>
       </aside>
 
@@ -296,9 +326,7 @@ const Messages = () => {
 
         {/* TOPBAR */}
         <header className="admin-topbar">
-
           <div className="admin-topbar-left">
-
             <button
               className="admin-mobile-menu"
               onClick={() => setSidebarOpen(true)}
@@ -314,11 +342,9 @@ const Messages = () => {
 
               <h1>Messages</h1>
             </div>
-
           </div>
 
           <div className="admin-topbar-right">
-
             <span className="admin-online-status">
               <span></span>
               Online
@@ -336,7 +362,6 @@ const Messages = () => {
                 }
               />
             </button>
-
           </div>
         </header>
 
@@ -345,10 +370,8 @@ const Messages = () => {
 
           {/* WELCOME */}
           <section className="messages-welcome">
-
             <div>
               <span>INBOX MANAGEMENT</span>
-
               <h2>Contact Messages</h2>
 
               <p>
@@ -359,58 +382,48 @@ const Messages = () => {
             <div className="messages-welcome-icon">
               <FiMail />
             </div>
-
           </section>
 
           {/* SUMMARY CARDS */}
           <section className="messages-summary-grid">
 
             <div className="messages-summary-card">
-
               <div className="messages-summary-icon">
                 <FiMail />
               </div>
 
               <div>
                 <span>TOTAL MESSAGES</span>
-
                 <h3>
                   {loading ? "..." : messages.length}
                 </h3>
               </div>
-
             </div>
 
             <div className="messages-summary-card">
-
               <div className="messages-summary-icon">
                 <FiUsers />
               </div>
 
               <div>
                 <span>UNIQUE CONTACTS</span>
-
                 <h3>
                   {loading ? "..." : uniqueContacts}
                 </h3>
               </div>
-
             </div>
 
             <div className="messages-summary-card">
-
               <div className="messages-summary-icon">
                 <FiSearch />
               </div>
 
               <div>
                 <span>SEARCH RESULTS</span>
-
                 <h3>
                   {loading ? "..." : filteredMessages.length}
                 </h3>
               </div>
-
             </div>
 
           </section>
@@ -420,10 +433,8 @@ const Messages = () => {
 
             {/* TABLE HEADER */}
             <div className="messages-content-header">
-
               <div>
                 <span>ALL INQUIRIES</span>
-
                 <h2>Received Messages</h2>
               </div>
 
@@ -435,12 +446,10 @@ const Messages = () => {
                 <FiRefreshCw />
                 Refresh
               </button>
-
             </div>
 
             {/* SEARCH */}
             <div className="messages-search-area">
-
               <FiSearch />
 
               <input
@@ -460,7 +469,6 @@ const Messages = () => {
                   <FiX />
                 </button>
               )}
-
             </div>
 
             {/* ERROR */}
@@ -470,20 +478,14 @@ const Messages = () => {
               </div>
             )}
 
-            {/* LOADING */}
+            {/* LOADING / EMPTY / TABLE */}
             {loading ? (
-
               <div className="messages-empty-state">
                 <FiRefreshCw className="refresh-spinning" />
-
                 <h3>Loading messages...</h3>
               </div>
-
             ) : filteredMessages.length === 0 ? (
-
-              /* EMPTY STATE */
               <div className="messages-empty-state">
-
                 <FiMail />
 
                 <h3>
@@ -497,14 +499,9 @@ const Messages = () => {
                     ? "Try another search keyword."
                     : "Contact form submissions will appear here."}
                 </p>
-
               </div>
-
             ) : (
-
-              /* TABLE */
               <div className="admin-table-wrapper">
-
                 <table className="admin-messages-table">
 
                   <thead>
@@ -517,15 +514,12 @@ const Messages = () => {
                   </thead>
 
                   <tbody>
-
                     {filteredMessages.map((message) => (
-
                       <tr key={message._id}>
 
                         {/* CONTACT */}
                         <td>
                           <div className="admin-contact-cell">
-
                             <div className="admin-contact-avatar">
                               {(message.name || "U")
                                 .charAt(0)
@@ -536,7 +530,6 @@ const Messages = () => {
                               <h4>{message.name}</h4>
                               <p>{message.email}</p>
                             </div>
-
                           </div>
                         </td>
 
@@ -552,7 +545,6 @@ const Messages = () => {
 
                         {/* ACTIONS */}
                         <td>
-
                           <div className="admin-action-buttons">
 
                             <button
@@ -561,6 +553,7 @@ const Messages = () => {
                                 setSelectedMessage(message)
                               }
                               title="View message"
+                              aria-label="View message"
                             >
                               <FiEye />
                             </button>
@@ -570,25 +563,26 @@ const Messages = () => {
                               onClick={() =>
                                 handleDelete(message._id)
                               }
+                              disabled={deletingId === message._id}
                               title="Delete message"
+                              aria-label="Delete message"
                             >
-                              <FiTrash2 />
+                              {deletingId === message._id ? (
+                                <FiRefreshCw className="refresh-spinning" />
+                              ) : (
+                                <FiTrash2 />
+                              )}
                             </button>
 
                           </div>
-
                         </td>
 
                       </tr>
-
                     ))}
-
                   </tbody>
 
                 </table>
-
               </div>
-
             )}
 
             {/* TABLE FOOTER */}
@@ -611,23 +605,18 @@ const Messages = () => {
 
       {/* VIEW MESSAGE MODAL */}
       {selectedMessage && (
-
         <div
           className="admin-modal-overlay"
           onClick={() => setSelectedMessage(null)}
         >
-
           <div
             className="admin-message-modal"
             onClick={(event) => event.stopPropagation()}
           >
 
-            {/* MODAL HEADER */}
             <div className="admin-modal-header">
-
               <div>
                 <span>MESSAGE DETAILS</span>
-
                 <h2>Contact Information</h2>
               </div>
 
@@ -637,12 +626,9 @@ const Messages = () => {
               >
                 <FiX />
               </button>
-
             </div>
 
-            {/* MODAL BODY */}
             <div className="admin-modal-body">
-
               <div>
                 <label>NAME</label>
                 <p>{selectedMessage.name}</p>
@@ -660,7 +646,6 @@ const Messages = () => {
 
               <div>
                 <label>MESSAGE</label>
-
                 <p className="admin-full-message">
                   {selectedMessage.message}
                 </p>
@@ -668,15 +653,12 @@ const Messages = () => {
 
               <div>
                 <label>RECEIVED DATE</label>
-
                 <p>
                   {formatDate(selectedMessage.createdAt)}
                 </p>
               </div>
-
             </div>
 
-            {/* MODAL CLOSE */}
             <button
               className="admin-modal-close-btn"
               onClick={() => setSelectedMessage(null)}
@@ -685,9 +667,7 @@ const Messages = () => {
             </button>
 
           </div>
-
         </div>
-
       )}
 
       {/* MOBILE OVERLAY */}
