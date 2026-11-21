@@ -3,15 +3,6 @@ import React from "react";
 import { motion } from "motion/react";
 import "./About.css";
 
-const details = [
-  ["Name:", "Tharanidharan M"],
-  ["Degree:", "B.E. Cyber Security"],
-  ["College:", "Mahendra Engineering College"],
-  ["Location:", "P. Velur, Namakkal, Tamil Nadu"],
-  ["Email:", "mtharanidharan90@gmail.com"],
-  ["Graduation:", "May 2027"],
-];
-
 const About = () => {
   return (
     <section className="about-section" id="about">
@@ -41,41 +32,28 @@ const About = () => {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.9, delay: 0.15 }}
         >
+          {/* HEADING */}
+
           <div className="about-heading">
             <h2>About Me</h2>
             <span>About</span>
           </div>
 
+          {/* ABOUT PARAGRAPH */}
+
           <p className="about-description">
-            I'm Tharanidharan M, an aspiring MERN Stack Developer
-            pursuing B.E. Cyber Security at Mahendra Engineering
-            College. I have knowledge of HTML, CSS, JavaScript,
-            React.js, Node.js, Express.js, and MongoDB.
-            I'm passionate about developing responsive web
-            applications and building practical solutions
-            using modern web technologies.
+            I'm a passionate MERN Stack Developer who enjoys
+            designing and developing modern, responsive, and
+            user-friendly web applications. With hands-on
+            experience in HTML, CSS, JavaScript, React.js,
+            Node.js, Express.js, and MongoDB, I focus on building
+            efficient and scalable full-stack solutions. I enjoy
+            turning creative ideas into functional applications,
+            exploring new technologies, and solving real-world
+            problems through clean and maintainable code.
+            My goal is to continuously grow as a developer and
+            create meaningful digital experiences.
           </p>
-
-          {/* PERSONAL DETAILS */}
-
-          <div className="about-details">
-            {details.map(([label, value], index) => (
-              <motion.div
-                className="about-detail-row"
-                key={label}
-                initial={{ opacity: 0, x: 25 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.25 + index * 0.1,
-                }}
-              >
-                <strong>{label}</strong>
-                <span>{value}</span>
-              </motion.div>
-            ))}
-          </div>
 
           {/* DOWNLOAD CV */}
 
