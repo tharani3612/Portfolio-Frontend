@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import {
   FiMail,
   FiLock,
@@ -12,6 +13,9 @@ import {
 } from "react-icons/fi";
 
 import "./AdminLogin.css";
+
+// Backend API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -44,20 +48,33 @@ const AdminLogin = () => {
       return;
     }
 
+    if (!API_URL) {
+      setError("Backend API URL is not configured.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/login",
+        `${API_URL.replace(/\/+$/, "")}/admin/login`,
         {
           email: formData.email.trim(),
           password: formData.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.data.success && response.data.token) {
-        sessionStorage.setItem("adminToken", response.data.token);
+        sessionStorage.setItem(
+          "adminToken",
+          response.data.token
+        );
 
         sessionStorage.setItem(
           "adminData",
@@ -66,13 +83,25 @@ const AdminLogin = () => {
 
         navigate("/admin/dashboard");
       } else {
-        setError(response.data.message || "Login failed.");
+        setError(
+          response.data.message || "Invalid login credentials."
+        );
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your connection."
-      );
+      console.error("Admin Login Error:", err);
+
+      if (err.response) {
+        setError(
+          err.response.data?.message ||
+          `Login failed. Server error: ${err.response.status}`
+        );
+      } else if (err.request) {
+        setError(
+          "Cannot connect to the backend. Please check your server and CORS settings."
+        );
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -83,6 +112,7 @@ const AdminLogin = () => {
       <div className="admin-login-card">
 
         {/* LEFT IMAGE */}
+
         <div className="admin-login-image">
           <img
             src="/images/profile.png"
@@ -92,8 +122,8 @@ const AdminLogin = () => {
         </div>
 
         {/* RIGHT LOGIN FORM */}
-        <div className="admin-login-form-panel">
 
+        <div className="admin-login-form-panel">
           <div className="admin-form-content">
 
             <div className="admin-form-heading">
@@ -117,6 +147,7 @@ const AdminLogin = () => {
             >
 
               {/* EMAIL */}
+
               <div className="admin-input-group">
                 <label htmlFor="admin-email">
                   EMAIL ADDRESS
@@ -140,6 +171,7 @@ const AdminLogin = () => {
               </div>
 
               {/* PASSWORD */}
+
               <div className="admin-input-group">
                 <label htmlFor="admin-password">
                   PASSWORD
@@ -155,7 +187,7 @@ const AdminLogin = () => {
                     placeholder="Your Password"
                     value={formData.password}
                     onChange={handleChange}
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                     required
                   />
 
@@ -175,6 +207,7 @@ const AdminLogin = () => {
               </div>
 
               {/* ERROR */}
+
               {error && (
                 <div className="admin-login-error" role="alert">
                   <FiAlertCircle />
@@ -183,6 +216,7 @@ const AdminLogin = () => {
               )}
 
               {/* LOGIN BUTTON */}
+
               <button
                 type="submit"
                 className="admin-login-button"
