@@ -14,7 +14,7 @@ import {
 
 import "./AdminLogin.css";
 
-// Backend API URL from environment variable
+// Backend API URL from Vercel Environment Variable
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminLogin = () => {
@@ -57,8 +57,10 @@ const AdminLogin = () => {
       setLoading(true);
       setError("");
 
+      const baseURL = API_URL.replace(/\/+$/, "");
+
       const response = await axios.post(
-        `${API_URL.replace(/\/+$/, "")}/admin/login`,
+        `${baseURL}/admin/login`,
         {
           email: formData.email.trim(),
           password: formData.password,
@@ -93,14 +95,16 @@ const AdminLogin = () => {
       if (err.response) {
         setError(
           err.response.data?.message ||
-          `Login failed. Server error: ${err.response.status}`
+            `Login failed. Server error: ${err.response.status}`
         );
       } else if (err.request) {
         setError(
           "Cannot connect to the backend. Please check your server and CORS settings."
         );
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(
+          "Something went wrong. Please try again."
+        );
       }
     } finally {
       setLoading(false);
@@ -112,7 +116,6 @@ const AdminLogin = () => {
       <div className="admin-login-card">
 
         {/* LEFT IMAGE */}
-
         <div className="admin-login-image">
           <img
             src="/images/profile.png"
@@ -122,7 +125,6 @@ const AdminLogin = () => {
         </div>
 
         {/* RIGHT LOGIN FORM */}
-
         <div className="admin-login-form-panel">
           <div className="admin-form-content">
 
@@ -147,7 +149,6 @@ const AdminLogin = () => {
             >
 
               {/* EMAIL */}
-
               <div className="admin-input-group">
                 <label htmlFor="admin-email">
                   EMAIL ADDRESS
@@ -171,7 +172,6 @@ const AdminLogin = () => {
               </div>
 
               {/* PASSWORD */}
-
               <div className="admin-input-group">
                 <label htmlFor="admin-password">
                   PASSWORD
@@ -198,7 +198,9 @@ const AdminLogin = () => {
                       setShowPassword((prev) => !prev)
                     }
                     aria-label={
-                      showPassword ? "Hide password" : "Show password"
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
                     }
                   >
                     {showPassword ? <FiEyeOff /> : <FiEye />}
@@ -207,7 +209,6 @@ const AdminLogin = () => {
               </div>
 
               {/* ERROR */}
-
               {error && (
                 <div className="admin-login-error" role="alert">
                   <FiAlertCircle />
@@ -216,14 +217,15 @@ const AdminLogin = () => {
               )}
 
               {/* LOGIN BUTTON */}
-
               <button
                 type="submit"
                 className="admin-login-button"
                 disabled={loading}
               >
                 <span>
-                  {loading ? "PLEASE WAIT..." : "SIGN IN TO DASHBOARD"}
+                  {loading
+                    ? "PLEASE WAIT..."
+                    : "SIGN IN TO DASHBOARD"}
                 </span>
 
                 {!loading && <FiArrowRight />}
